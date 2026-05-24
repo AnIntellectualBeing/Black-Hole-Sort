@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Hole Sort – Cosmic Puzzle Game</title>
+    <meta name="description" content="Sort glowing black holes into matching tubes. A relaxing, beautiful puzzle that challenges your brain. Now on Google Play.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a1a;
+            color: #e2e8f0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; display: block; }
+
+        /* ---------- Header ---------- */
+        .header {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 100;
+            background: rgba(10,10,26,0.92);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(138, 43, 226, 0.15);
+            padding: 0.8rem 2rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .logo {
+            font-weight: 800; font-size: 1.5rem;
+            background: linear-gradient(135deg, #b76eff, #6d8cff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-links a { font-weight: 600; font-size: 0.95rem; color: #cbd5e1; transition: 0.2s; }
+        .nav-links a:hover { color: #b76eff; }
+        .mobile-menu-btn { display: none; background: none; border: none; color: #e2e8f0; font-size: 1.5rem; cursor: pointer; }
+
+        /* ---------- Hero ---------- */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            display: flex; align-items: center; justify-content: center;
+            flex-wrap: wrap;
+            background: radial-gradient(ellipse at top, #1b1c4b 0%, #0a0a1a 70%);
+            min-height: 90vh;
+        }
+        .hero-content {
+            flex: 1 1 400px; max-width: 600px; padding-right: 2rem;
+        }
+        .hero-content h1 {
+            font-size: 3.5rem; font-weight: 900; line-height: 1.1; color: #fff;
+            text-shadow: 0 0 30px rgba(183, 110, 255, 0.5);
+        }
+        .hero-content h1 span {
+            background: linear-gradient(135deg, #b76eff, #6d8cff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-content p {
+            font-size: 1.2rem; color: #94a3b8; margin: 1.5rem 0 2rem; max-width: 500px;
+        }
+        .btn-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.9rem 2rem; border-radius: 50px; font-weight: 700; font-size: 1rem;
+            border: none; cursor: pointer; transition: 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #7b5ef7, #4a6cf7); color: #fff;
+            box-shadow: 0 8px 25px rgba(123, 94, 247, 0.4);
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(123, 94, 247, 0.6); }
+        .btn-outline {
+            border: 2px solid #7b5ef7; color: #cbd5e1; background: transparent;
+        }
+        .btn-outline:hover { background: rgba(123, 94, 247, 0.1); }
+
+        .hero-image {
+            flex: 1 1 350px; display: flex; justify-content: center;
+        }
+        /* Phone mockup – cosmic style */
+        .phone-mockup {
+            width: 280px; height: 560px;
+            background: #131330; border-radius: 45px; padding: 15px;
+            box-shadow: 0 25px 60px rgba(74, 108, 247, 0.25);
+            position: relative;
+            border: 2px solid rgba(183, 110, 255, 0.2);
+        }
+        .phone-screen {
+            background: #0f0f23; height: 100%; border-radius: 35px; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+        }
+        .black-hole-icon {
+            width: 110px; height: 110px;
+            background: radial-gradient(circle at 50% 50%, #000 22%, #0b0b1d 38%, #4a6cf7 58%, transparent 72%);
+            border-radius: 50%; margin-bottom: 1.5rem;
+            box-shadow: 0 0 60px rgba(183, 110, 255, 0.4);
+            position: relative;
+        }
+        .black-hole-icon::before {
+            content: "";
+            position: absolute; inset: -8px; border-radius: 50%;
+            background: conic-gradient(#ff38ff, #7a8cff, #44ffff, #ffcf44, #ff38ff);
+            animation: spin 4s linear infinite;
+            opacity: 0.8;
+            filter: blur(2px);
+        }
+        .black-hole-icon::after {
+            content: "";
+            position: absolute; top: 50%; left: 50%; width: 8px; height: 8px;
+            transform: translate(-50%, -50%); border-radius: 50%;
+            background: #fff; box-shadow: 0 0 20px #fff;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .phone-screen h3 { font-size: 1.3rem; font-weight: 700; color: #fff; }
+        .phone-screen p { font-size: 0.9rem; color: #94a3b8; margin-top: 0.3rem; }
+
+        /* ---------- Features ---------- */
+        .section { padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .section-title {
+            font-size: 2.8rem; font-weight: 800; text-align: center; margin-bottom: 3rem;
+            color: #fff;
+        }
+        .features-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem;
+        }
+        .feature-card {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(183,110,255,0.15);
+            border-radius: 24px; padding: 2.2rem 1.8rem;
+            backdrop-filter: blur(10px);
+            text-align: center; transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(183, 110, 255, 0.2);
+        }
+        .feature-card i { font-size: 2.5rem; color: #b76eff; margin-bottom: 1.2rem; }
+        .feature-card h3 { margin-bottom: 0.8rem; color: #f1f5f9; font-weight: 700; }
+        .feature-card p { color: #94a3b8; }
+
+        /* ---------- Carousel ---------- */
+        .carousel-container {
+            position: relative; overflow: hidden; border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            margin: 0 auto; max-width: 800px;
+        }
+        .carousel-slides {
+            display: flex; transition: transform 0.5s ease-in-out;
+        }
+        .carousel-slide {
+            min-width: 100%; height: 420px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: #fff; font-weight: 700;
+            background-size: cover; background-position: center;
+        }
+        .carousel-controls {
+            position: absolute; top: 50%; left: 0; right: 0;
+            transform: translateY(-50%);
+            display: flex; justify-content: space-between; padding: 0 1rem;
+            pointer-events: none;
+        }
+        .carousel-btn {
+            pointer-events: all; background: rgba(15,15,35,0.8); border: 1px solid rgba(255,255,255,0.2);
+            width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+            color: #fff; font-size: 1.2rem; backdrop-filter: blur(8px);
+        }
+        .carousel-dots { display: flex; justify-content: center; margin-top: 1.5rem; gap: 0.8rem; }
+        .dot {
+            width: 12px; height: 12px; border-radius: 50%; background: #334155; cursor: pointer; border: none;
+        }
+        .dot.active { background: #b76eff; }
+
+        /* ---------- CTA ---------- */
+        .cta-section {
+            background: linear-gradient(135deg, #2d1b4e, #1b2a4a);
+            text-align: center; color: #fff; padding: 4rem 2rem; border-radius: 30px;
+            margin: 3rem auto; max-width: 1000px;
+            box-shadow: 0 25px 50px rgba(123, 94, 247, 0.2);
+        }
+        .cta-section h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .cta-section p { font-size: 1.2rem; opacity: 0.9; margin-bottom: 2rem; }
+
+        /* ---------- Footer ---------- */
+        .footer {
+            background: #0f0f23; color: #94a3b8; padding: 2rem;
+            display: flex; flex-wrap: wrap; justify-content: space-between;
+            align-items: center; border-top: 1px solid rgba(183,110,255,0.2);
+        }
+        .footer-links { display: flex; gap: 1.5rem; }
+        .footer-links a { transition: 0.2s; }
+        .footer-links a:hover { color: #b76eff; }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 768px) {
+            .header { padding: 0.8rem 1rem; }
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            .hero-content h1 { font-size: 2.5rem; }
+            .hero { padding-top: 6rem; }
+            .phone-mockup { width: 220px; height: 450px; }
+            .section-title { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">✦ Black Hole Sort</div>
+        <nav class="nav-links" id="navLinks">
+            <a href="#features">Features</a>
+            <a href="#screenshots">Screenshots</a>
+            <a href="#privacy">Privacy</a>
+            <a href="#download" class="btn btn-primary" style="padding:0.5rem 1.5rem;">Download</a>
+        </nav>
+        <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Black Hole<br><span>Sort</span></h1>
+            <p>Sort cosmic black holes into matching tubes. A relaxing, beautiful puzzle that challenges your brain. Play offline, anytime.</p>
+            <div class="btn-group">
+                <a href="#" target="_blank" class="btn btn-primary">
+                    <i class="fab fa-google-play"></i> Get it on Play Store
+                </a>
+                <a href="#features" class="btn btn-outline">Explore Features</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <div class="black-hole-icon"></div>
+                    <h3>Black Hole Sort</h3>
+                    <p>Match. Plan. Clear.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section" id="features">
+        <h2 class="section-title">Cosmic Puzzle Experience</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-brain"></i>
+                <h3>Challenging Logic</h3>
+                <p>Plan every move to sort the black holes. Simple to learn, tough to master.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-lock-open"></i>
+                <h3>Locked Tubes</h3>
+                <p>Complete a tube to break the seal on locked chambers. Unlock new possibilities.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-eye-slash"></i>
+                <h3>Hidden Orbs</h3>
+                <p>Some black holes hide until the tube is nearly empty. Keep your memory sharp.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-infinity"></i>
+                <h3>Endless Variety</h3>
+                <p>New puzzles every level. Bright backgrounds shift every two levels to keep it fresh.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots Carousel -->
+    <section class="section" id="screenshots">
+        <h2 class="section-title">Inside the Game</h2>
+        <div class="carousel-container" id="carousel">
+            <div class="carousel-slides" id="carouselSlides">
+                <div class="carousel-slide" style="background:linear-gradient(135deg, #2d1b4e, #4a2e6a);">Home Screen</div>
+                <div class="carousel-slide" style="background:linear-gradient(135deg, #1b2a4a, #365a7a);">Puzzle in Progress</div>
+                <div class="carousel-slide" style="background:linear-gradient(135deg, #2e1f3d, #5a3a6a);">Locked Tube Mechanic</div>
+                <div class="carousel-slide" style="background:linear-gradient(135deg, #3a2a4a, #6a4a7a);">Level Complete</div>
+            </div>
+            <div class="carousel-controls">
+                <button class="carousel-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                <button class="carousel-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+        <div class="carousel-dots" id="carouselDots"></div>
+    </section>
+
+    <!-- CTA -->
+    <div class="cta-section" id="download">
+        <h2>Ready to enter the void?</h2>
+        <p>Download Black Hole Sort for free and start sorting today.</p>
+        <a href="#" target="_blank" class="btn btn-primary" style="font-size:1.2rem;">
+            <i class="fab fa-google-play"></i> Install from Play Store
+        </a>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div>© 2026 AnIntellectualCompany</div>
+        <div class="footer-links">
+            <a href="privacy-policy.html" target="_blank">Privacy Policy</a>
+            <a href="mailto:anintellectualcompany.contact@gmail.com">Contact</a>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        mobileBtn.addEventListener('click', () => {
+            if (navLinks.style.display === 'flex') {
+                navLinks.style.display = 'none';
+            } else {
+                navLinks.style.display = 'flex';
+                navLinks.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '60px';
+                navLinks.style.left = '0';
+                navLinks.style.width = '100%';
+                navLinks.style.background = '#0a0a1a';
+                navLinks.style.padding = '1rem';
+                navLinks.style.boxShadow = '0 10px 20px rgba(0,0,0,0.5)';
+                navLinks.style.zIndex = '99';
+            }
+        });
+
+        // Carousel
+        const slides = document.getElementById('carouselSlides');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const dotsContainer = document.getElementById('carouselDots');
+        const totalSlides = document.querySelectorAll('.carousel-slide').length;
+        let currentIndex = 0;
+
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('button');
+            dot.classList.add('dot');
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
+        }
+        updateDots();
+
+        function goToSlide(index) {
+            currentIndex = index;
+            slides.style.transform = `translateX(-${currentIndex * 100}%)`;
+            updateDots();
+        }
+
+        function updateDots() {
+            document.querySelectorAll('.dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentIndex);
+            });
+        }
+
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+            goToSlide(currentIndex);
+        });
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            goToSlide(currentIndex);
+        });
+
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            goToSlide(currentIndex);
+        }, 5000);
+    </script>
+</body>
+</html>
